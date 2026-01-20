@@ -13,17 +13,19 @@
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
   <script>
-    microsoftTeams.app.initialize().then(() => {
-      microsoftTeams.app.getContext().then((context) => {
-        const urlParams = new URLSearchParams(window.location.search);
-        // 既にredirecturlパラメータが存在する場合は何もしない（無限ループ防止）
-        if (context.page && context.page.subPageId && !urlParams.has('redirecturl')) {
-          const url = new URL(window.location.href);
-          url.searchParams.set('redirecturl', context.page.subPageId);
-          window.location.href = url.toString();
-        }
+    // リダイレクト済みフラグをチェック
+    if (!sessionStorage.getItem('teamsRedirected')) {
+      microsoftTeams.app.initialize().then(() => {
+        microsoftTeams.app.getContext().then((context) => {
+          if (context.page && context.page.subPageId) {
+            sessionStorage.setItem('teamsRedirected', 'true');
+            const url = new URL(window.location.href);
+            url.searchParams.set('redirecturl', context.page.subPageId);
+            window.location.href = url.toString();
+          }
+        });
       });
-    });
+    }
   </script>
 </body>
 
