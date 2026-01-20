@@ -15,7 +15,9 @@
   <script>
     microsoftTeams.app.initialize().then(() => {
       microsoftTeams.app.getContext().then((context) => {
-        if (context.page && context.page.subPageId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        // 既にredirecturlパラメータが存在する場合は何もしない（無限ループ防止）
+        if (context.page && context.page.subPageId && !urlParams.has('redirecturl')) {
           const url = new URL(window.location.href);
           url.searchParams.set('redirecturl', context.page.subPageId);
           window.location.href = url.toString();
